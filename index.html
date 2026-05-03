@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级身高情况调查</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #50c878;
+            --danger-color: #ff6b6b;
+            --header-bg: #eef2f7;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .table-container {
+            width: 100%;
+            max-width: 1200px;
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            border: 2px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* 表头样式 */
+        thead th {
+            background-color: var(--header-bg);
+            font-size: 1.4rem;
+            color: #333;
+            height: 60px;
+        }
+
+        /* 第一列样式 (身高/人数标签) */
+        .col-label {
+            background-color: #dcebf7 !important;
+            font-weight: bold;
+            font-size: 1.3rem;
+            width: 15%;
+        }
+
+        /* 数据单元格 */
+        .data-cell {
+            height: 80px;
+            padding: 5px;
+        }
+
+        .count-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0 10px;
+            display: inline-block;
+            width: 40px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            outline: none;
+        }
+
+        .btn:active {
+            transform: scale(0.9);
+        }
+
+        .btn-add {
+            background-color: var(--success-color);
+        }
+
+        .btn-sub {
+            background-color: var(--danger-color);
+            width: 35px;
+            height: 35px;
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+
+        /* 合计行 */
+        .total-row td {
+            background-color: #fff9c4 !important;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+
+        .reset-btn {
+            margin-top: 25px;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #357abd;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            th, td { padding: 5px; font-size: 0.9rem; }
+            .btn { width: 40px; height: 40px; font-size: 1.2rem; }
+            .count-display { font-size: 1.5rem; width: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>调查本班同学的身高情况</h1>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>身高/厘米</th>
+                    <th>119及以下</th>
+                    <th>120—129</th>
+                    <th>130—139</th>
+                    <th>140及以上</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 女生行 -->
+                <tr>
+                    <td class="col-label">女生人数</td>
+                    <td class="data-cell" data-group="girl" data-range="r1"></td>
+                    <td class="data-cell" data-group="girl" data-range="r2"></td>
+                    <td class="data-cell" data-group="girl" data-range="r3"></td>
+                    <td class="data-cell" data-group="girl" data-range="r4"></td>
+                </tr>
+
+                <!-- 男生行 -->
+                <tr>
+                    <td class="col-label">男生人数</td>
+                    <td class="data-cell" data-group="boy" data-range="r1"></td>
+                    <td class="data-cell" data-group="boy" data-range="r2"></td>
+                    <td class="data-cell" data-group="boy" data-range="r3"></td>
+                    <td class="data-cell" data-group="boy" data-range="r4"></td>
+                </tr>
+
+                <!-- 合计行 -->
+                <tr class="total-row">
+                    <td class="col-label">合计</td>
+                    <td class="data-cell" id="total-r1">0</td>
+                    <td class="data-cell" id="total-r2">0</td>
+                    <td class="data-cell" id="total-r3">0</td>
+                    <td class="data-cell" id="total-r4">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button class="reset-btn" onclick="resetAll()">重置所有数据</button>
+
+    <script>
+        // 初始化数据对象
+        const data = {
+            girl: { r1: 0, r2: 0, r3: 0, r4: 0 },
+            boy:  { r1: 0, r2: 0, r3: 0, r4: 0 }
+        };
+
+        // 页面加载完成后初始化表格
+        document.addEventListener('DOMContentLoaded', () => {
+            const cells = document.querySelectorAll('.data-cell[data-group]');
+            cells.forEach(cell => {
+                // 创建减号按钮
+                const btnSub = document.createElement('button');
+                btnSub.className = 'btn btn-sub';
+                btnSub.innerHTML = '-';
+                btnSub.onclick = (e) => updateCount(e, cell, -1);
+
+                // 创建显示数字的span
+                const span = document.createElement('span');
+                span.className = 'count-display';
+                span.innerText = '0';
+
+                // 创建加号按钮
+                const btnAdd = document.createElement('button');
+                btnAdd.className = 'btn btn-add';
+                btnAdd.innerHTML = '+';
+                btnAdd.onclick = (e) => updateCount(e, cell, 1);
+
+                // 组装
+                cell.appendChild(btnSub);
+                cell.appendChild(span);
+                cell.appendChild(btnAdd);
+            });
+        });
+
+        // 更新计数的逻辑
+        function updateCount(event, cellElement, change) {
+            // 阻止事件冒泡，防止触发其他可能的事件
+            event.stopPropagation();
+
+            const group = cellElement.getAttribute('data-group'); // girl or boy
+            const range = cellElement.getAttribute('data-range'); // r1, r2...
+
+            // 更新数据模型
+            let currentVal = data[group][range];
+            let newVal = currentVal + change;
+
+            if (newVal < 0) newVal = 0; // 防止负数
+
+            data[group][range] = newVal;
+
+            // 更新当前单元格的显示
+            const span = cellElement.querySelector('.count-display');
+            span.innerText = newVal;
+
+            // 更新底部合计行
+            updateTotal(range);
+        }
+
+        // 更新合计行
+        function updateTotal(range) {
+            const totalGirl = data.girl[range];
+            const totalBoy = data.boy[range];
+            const sum = totalGirl + totalBoy;
+
+            const totalCell = document.getElementById(`total-${range}`);
+            totalCell.innerText = sum;
+        }
+
+        // 重置所有数据
+        function resetAll() {
+            if(confirm("确定要清空所有统计数据吗？")) {
+                // 重置数据模型
+                data.girl = { r1: 0, r2: 0, r3: 0, r4: 0 };
+                data.boy  = { r1: 0, r2: 0, r3: 0, r4: 0 };
+
+                // 重置UI
+                const spans = document.querySelectorAll('.count-display');
+                spans.forEach(span => span.innerText = '0');
+
+                const totals = document.querySelectorAll('.total-row td:not(:first-child)');
+                totals.forEach(td => td.innerText = '0');
+            }
+        }
+    </script>
+</body>
+</html>
